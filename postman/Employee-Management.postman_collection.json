@@ -1,0 +1,156 @@
+{
+  "info": {
+    "name": "Employee Management API",
+    "_postman_id": "7f9b0c08-5b0b-4a1f-8c0f-0ddedce6e2b4",
+    "description": "Gin + MongoDB Employee Management System.\n\nRecommended: import the Postman Environment file `postman/Employee-Management.postman_environment.json` and select it.\n\nEnvironment variables:\n- baseUrl: http://localhost:8080\n- employeeId: (auto-set after Create)\n\nNote: this collection also defines collection variables as a fallback, but the environment is preferred.\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/healthz",
+          "host": ["{{baseUrl}}"],
+          "path": ["healthz"]
+        }
+      }
+    },
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "Create Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"{{$randomFirstName}}\",\n  \"last_name\": \"{{$randomLastName}}\",\n  \"email\": \"{{$randomEmail}}\",\n  \"department\": \"Engineering\",\n  \"position\": \"Backend Engineer\",\n  \"salary\": 120000,\n  \"status\": \"active\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/employees",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "employees"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"created\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.id) {",
+                  "  pm.environment.set(\"employeeId\", json.data.id);",
+                  "  pm.collectionVariables.set(\"employeeId\", json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Employees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/employees?limit=20&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "employees"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Employee (by id)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/employees/{{employeeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "employees", "{{employeeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Employee (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"department\": \"Platform\",\n  \"position\": \"Senior Backend Engineer\",\n  \"salary\": 150000,\n  \"status\": \"active\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/employees/{{employeeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "employees", "{{employeeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Employee",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/employees/{{employeeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "employees", "{{employeeId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "employeeId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
